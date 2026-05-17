@@ -27,7 +27,7 @@ const exercisePickerItems = exerciseCatalog.map((exercise) => ({
 
 export function TrainingPanel({ state, selectedDate, recoveryMap, onChange }: TrainingPanelProps) {
   const [exercise, setExercise] = useState("Press banca");
-  const [muscleId, setMuscleId] = useState<MuscleId>("chest");
+  const [muscleId, setMuscleId] = useState<MuscleId>("midChest");
   const [sets, setSets] = useState(4);
   const [setDetails, setSetDetails] = useState<WorkoutSet[]>(() => makeDefaultSets(4));
   const [rpe, setRpe] = useState(8);

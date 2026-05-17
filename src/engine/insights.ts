@@ -1,4 +1,4 @@
-import { MUSCLE_BY_ID, MUSCLES } from "../data/muscles";
+import { MUSCLE_BY_ID, MUSCLES, normalizeMuscleId } from "../data/muscles";
 import { calculateNutritionForDate, getWellnessForDate, toISODate } from "./recovery";
 import type { AppState, MuscleId, MuscleRecovery, NutritionTotals } from "../types";
 
@@ -62,7 +62,8 @@ export function getWeeklyTrainingDistribution(state: AppState, selectedDate: str
 
   state.workouts.forEach((workout) => {
     if (!dateSet.has(workout.date)) return;
-    byMuscle.set(workout.muscleId, (byMuscle.get(workout.muscleId) ?? 0) + getSetCount(workout));
+    const muscleId = normalizeMuscleId(workout.muscleId);
+    byMuscle.set(muscleId, (byMuscle.get(muscleId) ?? 0) + getSetCount(workout));
   });
 
   return {
@@ -119,12 +120,18 @@ export function getOvertrainingAlerts(
     }
   });
 
-  const pushSets = (distribution.muscles.find((item) => item.muscleId === "chest")?.sets ?? 0)
-    + (distribution.muscles.find((item) => item.muscleId === "shoulders")?.sets ?? 0)
-    + (distribution.muscles.find((item) => item.muscleId === "triceps")?.sets ?? 0);
-  const pullSets = (distribution.muscles.find((item) => item.muscleId === "upperBack")?.sets ?? 0)
-    + (distribution.muscles.find((item) => item.muscleId === "lats")?.sets ?? 0)
-    + (distribution.muscles.find((item) => item.muscleId === "biceps")?.sets ?? 0);
+  const getSets = (muscleId: MuscleId) => distribution.muscles.find((item) => item.muscleId === muscleId)?.sets ?? 0;
+  const pushSets =
+    getSets("upperChest") +
+    getSets("midChest") +
+    getSets("lowerChest") +
+    getSets("frontDelts") +
+    getSets("sideDelts") +
+    getSets("tricepsLong") +
+    getSets("tricepsLateral") +
+    getSets("tricepsMedial");
+  const pullSets =
+    getSets("upperBack") + getSets("midBack") + getSets("lats") + getSets("bicepsLong") + getSets("bicepsShort");
 
   if (pushSets >= 14 && pullSets > 0 && pushSets / pullSets > 1.6) {
     alerts.push({

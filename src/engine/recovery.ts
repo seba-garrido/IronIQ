@@ -1,4 +1,4 @@
-import { MUSCLE_BY_ID, MUSCLES, SYNERGY_MAP } from "../data/muscles";
+import { MUSCLE_BY_ID, MUSCLES, SYNERGY_MAP, normalizeMuscleId } from "../data/muscles";
 import type {
   AppState,
   DailyWellness,
@@ -139,9 +139,10 @@ function addLoad(targets: Map<MuscleId, number>, muscleId: MuscleId, load: numbe
 function getTrainingTargets(workout: WorkoutEntry, profile: Profile) {
   const targets = new Map<MuscleId, number>();
   const primaryLoad = workoutLoad(workout, profile);
-  addLoad(targets, workout.muscleId, primaryLoad);
+  const primaryMuscleId = normalizeMuscleId(workout.muscleId);
+  addLoad(targets, primaryMuscleId, primaryLoad);
 
-  const synergies = SYNERGY_MAP[workout.muscleId] ?? {};
+  const synergies = SYNERGY_MAP[primaryMuscleId] ?? {};
   Object.entries(synergies).forEach(([muscleId, ratio]) => {
     addLoad(targets, muscleId as MuscleId, primaryLoad * (ratio ?? 0));
   });
@@ -203,7 +204,7 @@ export function calculateRecovery(state: AppState, selectedDate: string) {
       loadScore += load;
 
       if (hoursAgo <= 24 * 7) {
-        weeklySets += workout.muscleId === muscle.id ? workout.sets : Math.round(workout.sets * 0.35);
+        weeklySets += normalizeMuscleId(workout.muscleId) === muscle.id ? workout.sets : Math.round(workout.sets * 0.35);
       }
 
       if (!lastTrained || workout.date > lastTrained) {

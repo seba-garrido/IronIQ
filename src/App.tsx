@@ -22,7 +22,7 @@ export default function App() {
   const [activeTab, setActiveTab] = useState<AppTab>("body");
   const [authMode, setAuthMode] = useState<AuthMode>("login");
   const [isAuthView, setIsAuthView] = useState(false);
-  const [selectedMuscle, setSelectedMuscle] = useState<MuscleId>("chest");
+  const [selectedMuscle, setSelectedMuscle] = useState<MuscleId>("midChest");
 
   const recoveryMap = useMemo(() => calculateRecovery(state, selectedDate), [state, selectedDate]);
 

@@ -15,10 +15,17 @@ interface BodyMap3DProps {
 const MODEL_URL = "/models/z-anatomy-fitness-muscles.glb";
 
 const muscleRules: Array<[MuscleId, string[]]> = [
-  ["chest", ["pectoralis"]],
-  ["shoulders", ["deltoid", "supraspinatus", "subscapularis"]],
-  ["biceps", ["biceps brachii", "brachialis", "coracobrachialis"]],
-  ["triceps", ["triceps brachii", "anconeus"]],
+  ["upperChest", ["clavicular head of pectoralis major"]],
+  ["lowerChest", ["abdominal head of pectoralis major"]],
+  ["midChest", ["sternocostal head of pectoralis major", "pectoralis minor", "pectoralis"]],
+  ["frontDelts", ["clavicular part of deltoid", "subscapularis", "coracobrachialis"]],
+  ["sideDelts", ["acromial part of deltoid", "supraspinatus"]],
+  ["rearDelts", ["scapular spinal part of deltoid"]],
+  ["bicepsLong", ["long head of biceps brachii", "brachialis"]],
+  ["bicepsShort", ["short head of biceps brachii"]],
+  ["tricepsLong", ["long head of triceps brachii"]],
+  ["tricepsLateral", ["lateral head of triceps brachii", "anconeus"]],
+  ["tricepsMedial", ["medial head of triceps brachii"]],
   [
     "forearms",
     [
@@ -32,8 +39,9 @@ const muscleRules: Array<[MuscleId, string[]]> = [
     ],
   ],
   ["abs", ["rectus abdominis", "oblique", "transversus abdominis", "serratus anterior"]],
-  ["traps", ["trapezius"]],
-  ["upperBack", ["rhomboid", "teres major", "teres minor", "infraspinatus"]],
+  ["traps", ["descending part of trapezius", "transverse part of trapezius", "ascending part of trapezius"]],
+  ["upperBack", ["rhomboid minor", "levator scapulae"]],
+  ["midBack", ["rhomboid major", "teres major", "teres minor", "infraspinatus"]],
   ["lats", ["latissimus dorsi"]],
   ["lowerBack", ["iliocostalis", "longissimus", "multifidus", "quadratus lumborum"]],
   ["glutes", ["gluteus", "tensor fasciae latae"]],
@@ -54,7 +62,7 @@ function muscleIdFromName(name: string): MuscleId | undefined {
 function materialForMesh(name: string, recoveryMap: Record<MuscleId, MuscleRecovery>) {
   const muscleId = muscleIdFromName(name);
   const isTendon = normalizeName(name).includes("tendon");
-  const color = muscleId ? recoveryBandColor(recoveryMap[muscleId].recovery) : isTendon ? "#ded3c4" : "#b7473e";
+  const color = muscleId ? recoveryBandColor(recoveryMap[muscleId]?.recovery ?? 100) : isTendon ? "#ded3c4" : "#b7473e";
 
   return new THREE.MeshStandardMaterial({
     color,
