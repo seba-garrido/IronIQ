@@ -73,8 +73,6 @@ function calculateMacroPlan(profile: Profile): MacroPlan {
   };
 }
 
-const formatNumber = (value: number) => value.toLocaleString("es-CL");
-
 export function ProfilePanel({ profile, onChange }: ProfilePanelProps) {
   const update = <K extends keyof Profile>(key: K, value: Profile[K]) => {
     const nextProfile = { ...profile, [key]: value };
@@ -198,36 +196,6 @@ export function ProfilePanel({ profile, onChange }: ProfilePanelProps) {
           Calcular calorías y macros
         </button>
       </div>
-
-      {profile.macroPlan && (
-        <section className="macro-plan" aria-live="polite">
-          <div className="macro-plan__header">
-            <div>
-              <span>Plan nutricional</span>
-              <strong>{formatNumber(profile.macroPlan.targetCalories)} kcal objetivo</strong>
-            </div>
-            <small>x{profile.macroPlan.activityMultiplier.toFixed(2)} actividad</small>
-          </div>
-          <div className="macro-plan__grid">
-            <div>
-              <span>Mantenimiento</span>
-              <strong>{formatNumber(profile.macroPlan.maintenanceCalories)} kcal</strong>
-            </div>
-            <div>
-              <span>Proteína</span>
-              <strong>{profile.macroPlan.protein} g</strong>
-            </div>
-            <div>
-              <span>Carbohidratos</span>
-              <strong>{profile.macroPlan.carbs} g</strong>
-            </div>
-            <div>
-              <span>Grasas</span>
-              <strong>{profile.macroPlan.fat} g</strong>
-            </div>
-          </div>
-        </section>
-      )}
 
       <div className="profile-footer">
         <Save size={16} />

@@ -14,7 +14,9 @@ export type MuscleId =
   | "hamstrings"
   | "calves";
 
-export type AppTab = "nutrition" | "training" | "body";
+export type AppTab = "nutrition" | "training" | "body" | "profile";
+
+export type AuthMode = "login" | "register";
 
 export type MealType = "Desayuno" | "Almuerzo" | "Cena" | "Snack";
 

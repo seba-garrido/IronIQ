@@ -10,6 +10,7 @@ interface NutritionPanelProps {
 }
 
 const mealTypes: MealType[] = ["Desayuno", "Almuerzo", "Cena", "Snack"];
+const formatNumber = (value: number) => value.toLocaleString("es-CL");
 
 export function NutritionPanel({ state, selectedDate, onChange }: NutritionPanelProps) {
   const [meal, setMeal] = useState<MealType>("Almuerzo");
@@ -30,6 +31,7 @@ export function NutritionPanel({ state, selectedDate, onChange }: NutritionPanel
     [state.supplements, selectedDate],
   );
   const totals = calculateNutritionForDate(state, selectedDate);
+  const macroPlan = state.profile.macroPlan;
 
   const addFood = (event: FormEvent) => {
     event.preventDefault();
@@ -109,6 +111,36 @@ export function NutritionPanel({ state, selectedDate, onChange }: NutritionPanel
             <small>{Math.round(totals.fat)} g grasa</small>
           </div>
         </div>
+
+        {macroPlan && (
+          <section className="macro-plan nutrition-plan" aria-label="Plan nutricional">
+            <div className="macro-plan__header">
+              <div>
+                <span>Plan nutricional</span>
+                <strong>{formatNumber(macroPlan.targetCalories)} kcal objetivo</strong>
+              </div>
+              <small>x{macroPlan.activityMultiplier.toFixed(2)} actividad</small>
+            </div>
+            <div className="macro-plan__grid">
+              <div>
+                <span>Mantenimiento</span>
+                <strong>{formatNumber(macroPlan.maintenanceCalories)} kcal</strong>
+              </div>
+              <div>
+                <span>Proteína</span>
+                <strong>{macroPlan.protein} g</strong>
+              </div>
+              <div>
+                <span>Carbohidratos</span>
+                <strong>{macroPlan.carbs} g</strong>
+              </div>
+              <div>
+                <span>Grasas</span>
+                <strong>{macroPlan.fat} g</strong>
+              </div>
+            </div>
+          </section>
+        )}
 
         <form className="entry-form" onSubmit={addFood}>
           <label>
