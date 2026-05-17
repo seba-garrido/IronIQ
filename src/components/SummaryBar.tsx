@@ -1,5 +1,6 @@
-import { Activity, Flame, Target, Watch, Zap } from "lucide-react";
+import { Activity, BrainCircuit, Flame, Target, Watch, Zap } from "lucide-react";
 import { MUSCLE_BY_ID } from "../data/muscles";
+import { calculateIronIQIndex } from "../engine/insights";
 import { calculateNutritionForDate, getWellnessForDate } from "../engine/recovery";
 import type { AppState, MuscleId, MuscleRecovery } from "../types";
 
@@ -14,9 +15,16 @@ export function SummaryBar({ state, selectedDate, recoveryMap }: SummaryBarProps
   const wellness = getWellnessForDate(state, selectedDate);
   const lowest = Object.values(recoveryMap).sort((a, b) => a.recovery - b.recovery)[0];
   const readyCount = Object.values(recoveryMap).filter((item) => item.recovery >= 82).length;
+  const ironIQ = calculateIronIQIndex(state, selectedDate, recoveryMap);
 
   return (
     <section className="summary-grid" aria-label="Resumen del día">
+      <div className="summary-tile ironiq-index">
+        <BrainCircuit size={20} />
+        <span>Índice IronIQ</span>
+        <strong>{ironIQ.index}</strong>
+        <small>recuperación {ironIQ.averageRecovery}%</small>
+      </div>
       <div className="summary-tile">
         <Flame size={20} />
         <span>Calorías</span>

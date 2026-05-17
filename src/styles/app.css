@@ -567,7 +567,7 @@ button {
 
 .summary-grid {
   display: grid;
-  grid-template-columns: repeat(5, minmax(0, 1fr));
+  grid-template-columns: repeat(6, minmax(0, 1fr));
   gap: 12px;
   margin: 14px 0;
 }
@@ -584,6 +584,11 @@ button {
 
 .summary-tile svg {
   color: var(--teal);
+}
+
+.summary-tile.ironiq-index {
+  border-color: rgba(8, 125, 116, 0.42);
+  background: linear-gradient(180deg, rgba(232, 248, 241, 0.9), rgba(255, 255, 255, 0.9));
 }
 
 .summary-tile strong {
@@ -741,6 +746,151 @@ select:focus {
   box-shadow: 0 0 0 3px rgba(8, 125, 116, 0.14);
 }
 
+.search-picker {
+  min-width: 0;
+}
+
+.selector-trigger {
+  display: grid;
+  width: 100%;
+  min-height: 40px;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 10px;
+  border: 1px solid #d2cab9;
+  border-radius: 7px;
+  padding: 0 10px;
+  color: var(--ink);
+  background: #ffffff;
+  text-align: left;
+}
+
+.selector-trigger span {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.selector-trigger svg {
+  color: var(--teal);
+}
+
+.picker-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  display: grid;
+  place-items: center;
+  padding: 18px;
+  background: rgba(15, 19, 17, 0.34);
+  backdrop-filter: blur(5px);
+}
+
+.picker-popover {
+  display: grid;
+  width: min(620px, 100%);
+  max-height: min(760px, calc(100vh - 36px));
+  gap: 12px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 16px;
+  background: var(--surface);
+  box-shadow: 0 28px 80px rgba(18, 25, 22, 0.28);
+}
+
+.picker-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.picker-header span {
+  color: var(--muted);
+  font-size: 0.82rem;
+}
+
+.picker-header strong {
+  display: block;
+  margin-top: 2px;
+  font-size: 1.25rem;
+}
+
+.picker-search {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: center;
+  gap: 8px;
+  border: 1px solid var(--line);
+  border-radius: 7px;
+  padding: 0 10px;
+  background: rgba(255, 255, 255, 0.76);
+}
+
+.picker-search svg {
+  color: var(--teal);
+}
+
+.picker-search input {
+  border: 0;
+  box-shadow: none;
+  padding: 0;
+  background: transparent;
+}
+
+.picker-results {
+  display: grid;
+  gap: 8px;
+  overflow: auto;
+  padding-right: 4px;
+}
+
+.picker-result {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 12px;
+  align-items: center;
+  min-height: 68px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 10px 12px;
+  color: var(--ink);
+  background: rgba(255, 255, 255, 0.7);
+  text-align: left;
+}
+
+.picker-result:hover {
+  border-color: var(--teal);
+}
+
+.picker-result strong,
+.picker-result span {
+  display: block;
+}
+
+.picker-result span,
+.picker-result small {
+  margin-top: 4px;
+  color: var(--muted);
+}
+
+.picker-result__meta {
+  display: grid;
+  justify-items: end;
+  gap: 6px;
+  white-space: nowrap;
+}
+
+.picker-muscle-badge {
+  min-height: 26px;
+  border-radius: 999px;
+  padding: 5px 8px;
+  color: white;
+  background: var(--teal);
+  font-size: 0.75rem;
+}
+
 .span-2 {
   grid-column: span 2;
 }
@@ -865,6 +1015,196 @@ select:focus {
   display: block;
   margin-top: 3px;
   overflow-wrap: anywhere;
+}
+
+.insight-card,
+.history-panel {
+  display: grid;
+  gap: 12px;
+  margin-top: 14px;
+  padding: 13px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.7);
+}
+
+.insight-card__header,
+.compact-heading {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 0;
+}
+
+.insight-card__header svg,
+.compact-heading svg {
+  color: var(--teal);
+  flex: 0 0 auto;
+}
+
+.insight-card__header span,
+.compact-heading span {
+  display: block;
+  color: var(--muted);
+  font-size: 0.82rem;
+}
+
+.insight-card__header strong,
+.compact-heading strong {
+  display: block;
+  margin-top: 2px;
+}
+
+.insight-card p,
+.insight-card small {
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.5;
+}
+
+.suggestion-chips,
+.macro-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.suggestion-chips span,
+.macro-legend span {
+  min-height: 30px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 6px 10px;
+  color: var(--ink);
+  background: var(--surface);
+  font-size: 0.8rem;
+}
+
+.alert-list {
+  display: grid;
+  gap: 8px;
+}
+
+.alert-list p {
+  margin: 0;
+  color: var(--muted);
+}
+
+.alert-item {
+  display: grid;
+  gap: 4px;
+  padding: 10px;
+  border-left: 4px solid var(--amber);
+  border-radius: 7px;
+  background: rgba(255, 255, 255, 0.62);
+}
+
+.alert-item.is-high {
+  border-left-color: var(--coral);
+}
+
+.alert-item.is-low {
+  border-left-color: var(--green);
+}
+
+.alert-item span {
+  color: var(--muted);
+  font-size: 0.86rem;
+  line-height: 1.45;
+}
+
+.weekly-bars,
+.calorie-history {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 8px;
+  min-height: 116px;
+  align-items: end;
+}
+
+.weekly-bar,
+.calorie-day {
+  display: grid;
+  min-width: 0;
+  height: 112px;
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  justify-items: center;
+  gap: 5px;
+  color: var(--muted);
+  font-size: 0.74rem;
+}
+
+.weekly-bar strong,
+.calorie-day strong {
+  align-self: end;
+  width: 100%;
+  max-width: 28px;
+  border-radius: 999px 999px 5px 5px;
+  background: linear-gradient(180deg, var(--teal), #7bd66f);
+}
+
+.calorie-day strong {
+  background: linear-gradient(180deg, var(--amber), var(--coral));
+}
+
+.muscle-load-bars {
+  display: grid;
+  gap: 8px;
+}
+
+.load-row {
+  display: grid;
+  grid-template-columns: 76px minmax(0, 1fr) 26px;
+  gap: 8px;
+  align-items: center;
+  color: var(--muted);
+  font-size: 0.82rem;
+}
+
+.load-row div {
+  height: 10px;
+  border-radius: 999px;
+  background: rgba(8, 125, 116, 0.12);
+  overflow: hidden;
+}
+
+.load-row strong {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--teal);
+}
+
+.macro-stack {
+  display: flex;
+  min-height: 22px;
+  border-radius: 999px;
+  overflow: hidden;
+  background: rgba(8, 125, 116, 0.1);
+}
+
+.macro-stack span {
+  min-width: 3px;
+}
+
+.macro-stack__protein {
+  background: var(--teal);
+}
+
+.macro-stack__carbs {
+  background: var(--amber);
+}
+
+.macro-stack__fat {
+  background: var(--coral);
+}
+
+.calorie-target-note {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--muted);
+  font-size: 0.84rem;
 }
 
 .main-surface {
@@ -1274,6 +1614,10 @@ select:focus {
   background: var(--surface);
 }
 
+:root[data-theme="dark"] .summary-tile.ironiq-index {
+  background: linear-gradient(180deg, rgba(24, 50, 43, 0.88), rgba(23, 28, 25, 0.92));
+}
+
 :root[data-theme="dark"] .header-status,
 :root[data-theme="dark"] .date-pill,
 :root[data-theme="dark"] .calendar-toggle,
@@ -1294,14 +1638,23 @@ select:focus {
 }
 
 :root[data-theme="dark"] input,
-:root[data-theme="dark"] select {
+:root[data-theme="dark"] select,
+:root[data-theme="dark"] .selector-trigger {
   border-color: #46544c;
   color: var(--ink);
   background: #101512;
 }
 
+:root[data-theme="dark"] .picker-search,
+:root[data-theme="dark"] .picker-result {
+  background: rgba(255, 255, 255, 0.045);
+}
+
 :root[data-theme="dark"] .month-day.is-outside,
 :root[data-theme="dark"] .set-editor,
+:root[data-theme="dark"] .insight-card,
+:root[data-theme="dark"] .history-panel,
+:root[data-theme="dark"] .alert-item,
 :root[data-theme="dark"] .macro-rings div,
 :root[data-theme="dark"] .training-metrics div,
 :root[data-theme="dark"] .wearable-strip div,
@@ -1514,6 +1867,24 @@ select:focus {
   .macro-plan__grid,
   .muscle-selector {
     grid-template-columns: 1fr;
+  }
+
+  .weekly-bars,
+  .calorie-history {
+    gap: 5px;
+  }
+
+  .picker-result {
+    grid-template-columns: 1fr;
+  }
+
+  .picker-result__meta {
+    justify-items: start;
+    white-space: normal;
+  }
+
+  .load-row {
+    grid-template-columns: 66px minmax(0, 1fr) 24px;
   }
 
   .span-2 {

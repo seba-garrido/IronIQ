@@ -1,31 +1,58 @@
-import { Dumbbell, Plus, RefreshCw, Trash2, Watch } from "lucide-react";
+import { AlertTriangle, BarChart3, Dumbbell, Plus, RefreshCw, Sparkles, Trash2, Watch } from "lucide-react";
 import { FormEvent, useMemo, useState } from "react";
-import { MUSCLES } from "../data/muscles";
+import { SearchPicker } from "./SearchPicker";
+import { exerciseCatalog } from "../data/catalog";
+import type { ExerciseCatalogItem } from "../data/catalog";
+import { MUSCLE_BY_ID, MUSCLES } from "../data/muscles";
+import { getOvertrainingAlerts, getTrainingSuggestion, getWeeklyTrainingDistribution } from "../engine/insights";
 import { createId, getWellnessForDate } from "../engine/recovery";
-import type { AppState, MuscleId, WorkoutEntry, WorkoutSet } from "../types";
+import type { AppState, MuscleId, MuscleRecovery, WorkoutEntry, WorkoutSet } from "../types";
 
 interface TrainingPanelProps {
   state: AppState;
   selectedDate: string;
+  recoveryMap: Record<MuscleId, MuscleRecovery>;
   onChange: (state: AppState) => void;
 }
 
 const makeDefaultSets = (count: number, reps = 8, weightKg = 70): WorkoutSet[] =>
   Array.from({ length: count }, (_, index) => ({ setNumber: index + 1, reps, weightKg }));
+const exercisePickerItems = exerciseCatalog.map((exercise) => ({
+  ...exercise,
+  title: exercise.name,
+  subtitle: `${MUSCLE_BY_ID[exercise.muscleId].label} · ${exercise.pattern}`,
+  meta: `${exercise.defaultSets}x${exercise.defaultReps} · ${exercise.defaultWeightKg} kg`,
+  searchText: `${exercise.name} ${exercise.pattern} ${MUSCLE_BY_ID[exercise.muscleId].label} ${exercise.tags.join(" ")}`,
+}));
 
-export function TrainingPanel({ state, selectedDate, onChange }: TrainingPanelProps) {
+export function TrainingPanel({ state, selectedDate, recoveryMap, onChange }: TrainingPanelProps) {
   const [exercise, setExercise] = useState("Press banca");
   const [muscleId, setMuscleId] = useState<MuscleId>("chest");
   const [sets, setSets] = useState(4);
   const [setDetails, setSetDetails] = useState<WorkoutSet[]>(() => makeDefaultSets(4));
   const [rpe, setRpe] = useState(8);
   const [durationMin, setDurationMin] = useState(35);
+  const [showSuggestion, setShowSuggestion] = useState(false);
 
   const workouts = useMemo(
     () => state.workouts.filter((workout) => workout.date === selectedDate),
     [state.workouts, selectedDate],
   );
   const wellness = getWellnessForDate(state, selectedDate);
+  const suggestion = useMemo(
+    () => getTrainingSuggestion(state, selectedDate, recoveryMap),
+    [state, selectedDate, recoveryMap],
+  );
+  const alerts = useMemo(
+    () => getOvertrainingAlerts(state, selectedDate, recoveryMap),
+    [state, selectedDate, recoveryMap],
+  );
+  const weeklyDistribution = useMemo(
+    () => getWeeklyTrainingDistribution(state, selectedDate),
+    [state, selectedDate],
+  );
+  const maxDailySets = Math.max(1, ...weeklyDistribution.daily.map((item) => item.sets));
+  const maxMuscleSets = Math.max(1, ...weeklyDistribution.muscles.map((item) => item.sets));
 
   const updateSetCount = (nextSets: number) => {
     const safeSets = Math.max(1, Math.min(12, nextSets || 1));
@@ -137,6 +164,15 @@ export function TrainingPanel({ state, selectedDate, onChange }: TrainingPanelPr
     });
   };
 
+  const selectExercise = (item: ExerciseCatalogItem) => {
+    setExercise(item.name);
+    setMuscleId(item.muscleId);
+    setRpe(8);
+    setDurationMin(Math.max(20, item.defaultSets * 8));
+    updateSetCount(item.defaultSets);
+    setSetDetails(makeDefaultSets(item.defaultSets, item.defaultReps, item.defaultWeightKg));
+  };
+
   const totalSets = workouts.reduce((total, workout) => total + getWorkoutSetDetails(workout).length, 0);
   const totalMinutes = workouts.reduce((total, workout) => total + workout.durationMin, 0);
 
@@ -166,11 +202,52 @@ export function TrainingPanel({ state, selectedDate, onChange }: TrainingPanelPr
           </div>
         </div>
 
+        <button className="secondary-button full-width" type="button" onClick={() => setShowSuggestion((value) => !value)}>
+          <Sparkles size={16} />
+          Sugerencia de entrenamiento IronIQ
+        </button>
+
+        {showSuggestion && (
+          <section className="insight-card training-suggestion" aria-label="Sugerencia de entrenamiento">
+            <div className="insight-card__header">
+              <Sparkles size={18} />
+              <div>
+                <span>Sugerencia para hoy</span>
+                <strong>{suggestion.title}</strong>
+              </div>
+            </div>
+            <p>{suggestion.detail}</p>
+            {suggestion.exercises.length > 0 && (
+              <div className="suggestion-chips">
+                {suggestion.exercises.map((item) => (
+                  <span key={item}>{item}</span>
+                ))}
+              </div>
+            )}
+            {suggestion.avoid.length > 0 && (
+              <small>
+                Cuidar:{" "}
+                {suggestion.avoid
+                  .map((item) => `${item.muscle.shortLabel} (${item.recovery}%, ${item.hoursLeft} h)`)
+                  .join(" · ")}
+              </small>
+            )}
+          </section>
+        )}
+
         <form className="entry-form" onSubmit={addWorkout}>
-          <label className="span-2">
-            Ejercicio
-            <input value={exercise} onChange={(event) => setExercise(event.target.value)} />
-          </label>
+          <div className="span-2">
+            <SearchPicker
+              emptyText="No encontré ejercicios con ese nombre."
+              items={exercisePickerItems}
+              label="Ejercicio"
+              onSelect={selectExercise}
+              placeholder="Buscar press, sentadilla, remo..."
+              renderBadge={(item) => <span className="picker-muscle-badge">{MUSCLE_BY_ID[item.muscleId].shortLabel}</span>}
+              title="Buscar ejercicio"
+              value={exercise || "Seleccionar ejercicio"}
+            />
+          </div>
           <label>
             Musculo principal
             <select value={muscleId} onChange={(event) => setMuscleId(event.target.value as MuscleId)}>
@@ -277,6 +354,56 @@ export function TrainingPanel({ state, selectedDate, onChange }: TrainingPanelPr
         </button>
 
         <p className="integration-note">Conector preparado para autorizacion Health Kit o Health Connect.</p>
+
+        <section className="insight-card overtraining-alerts" aria-label="Alertas de sobreentrenamiento">
+          <div className="insight-card__header">
+            <AlertTriangle size={18} />
+            <div>
+              <span>Alertas de sobreentrenamiento</span>
+              <strong>{alerts.length ? `${alerts.length} señales activas` : "Sin alertas críticas"}</strong>
+            </div>
+          </div>
+          <div className="alert-list">
+            {alerts.map((alert) => (
+              <article className={`alert-item is-${alert.severity}`} key={`${alert.title}-${alert.detail}`}>
+                <strong>{alert.title}</strong>
+                <span>{alert.detail}</span>
+              </article>
+            ))}
+            {alerts.length === 0 && <p>Volumen, recuperación y balance semanal se ven dentro de rango.</p>}
+          </div>
+        </section>
+
+        <section className="history-panel" aria-label="Historial muscular semanal">
+          <div className="panel-heading compact-heading">
+            <BarChart3 size={18} />
+            <div>
+              <span>Historial muscular</span>
+              <strong>Distribución semanal</strong>
+            </div>
+          </div>
+          <div className="weekly-bars">
+            {weeklyDistribution.daily.map((item) => (
+              <div className="weekly-bar" key={item.date}>
+                <span>{item.date.slice(8, 10)}</span>
+                <strong style={{ height: `${Math.max(8, (item.sets / maxDailySets) * 78)}%` }} />
+                <small>{item.sets}</small>
+              </div>
+            ))}
+          </div>
+          <div className="muscle-load-bars">
+            {weeklyDistribution.muscles.slice(0, 7).map((item) => (
+              <div className="load-row" key={item.muscleId}>
+                <span>{MUSCLE_BY_ID[item.muscleId].shortLabel}</span>
+                <div>
+                  <strong style={{ width: `${Math.max(7, (item.sets / maxMuscleSets) * 100)}%` }} />
+                </div>
+                <small>{item.sets}</small>
+              </div>
+            ))}
+            {weeklyDistribution.muscles.length === 0 && <p className="empty-state">Aún no hay series esta semana.</p>}
+          </div>
+        </section>
 
         <div className="list-stack">
           {workouts.map((workout) => (

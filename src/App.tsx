@@ -83,7 +83,12 @@ export default function App() {
                   <NutritionPanel state={state} selectedDate={selectedDate} onChange={setState} />
                 )}
                 {activeTab === "training" && (
-                  <TrainingPanel state={state} selectedDate={selectedDate} onChange={setState} />
+                  <TrainingPanel
+                    state={state}
+                    selectedDate={selectedDate}
+                    recoveryMap={recoveryMap}
+                    onChange={setState}
+                  />
                 )}
                 {activeTab === "body" && (
                   <BodyPanel
