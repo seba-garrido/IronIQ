@@ -1,0 +1,12 @@
+node_modules/
+dist/
+test-artifacts/
+
+*.log
+*.local
+
+.env
+.env.*
+
+tools/z-anatomy/*.zip
+tools/z-anatomy/Z-Anatomy/
